@@ -22,7 +22,7 @@ var ProductList [] Product
 
 func handleProduct(write http.ResponseWriter,read *http.Request){
 
-	write.Header().Set("Access Control Allow Origin","*")
+	write.Header().Set("Access-Control-Allow-Origin","*")
 	write.Header().Set("Content-Type","Application/json")
 
 	if(read.Method!="GET"){
@@ -36,7 +36,8 @@ func handleProduct(write http.ResponseWriter,read *http.Request){
 
 func setProduct(write http.ResponseWriter,read *http.Request){
 
-	write.Header().Set("Access Control Allow Origin","*")
+	write.Header().Set("Access-Control-Allow-Origin","*")
+	write.Header().Set("Access-Control-Allow-Headers","Content-Type")
 	write.Header().Set("Content-Type","Application/json")
 
 	if(read.Method!="POST"){
