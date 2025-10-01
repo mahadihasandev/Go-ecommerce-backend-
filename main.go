@@ -21,6 +21,7 @@ type Product struct{
 var ProductList [] Product
 
 func handleProduct(write http.ResponseWriter,read *http.Request){
+
 	write.Header().Set("Access Control Allow Origin","*")
 	write.Header().Set("Content-Type","Application/json")
 
@@ -30,9 +31,31 @@ func handleProduct(write http.ResponseWriter,read *http.Request){
 	}
 
 	encoder:=json.NewEncoder(write)
-
 	encoder.Encode(ProductList)
 }
+
+func setProduct(write http.ResponseWriter,read *http.Request){
+
+	write.Header().Set("Access Control Allow Origin","*")
+	write.Header().Set("Content-Type","Application/json")
+
+	if(read.Method!="POST"){
+		http.Error(write,"Send a post request",400)
+		return
+	}
+
+	var setProductList Product
+	decoder:=json.NewDecoder(read.Body)
+	err:=decoder.Decode(&setProductList)
+
+	if(err!=nil){
+		http.Error(write,"Send a json object",400)
+		return
+	}
+	setProductList.Id=len(ProductList)+1
+	ProductList=append(ProductList, setProductList)
+}
+
 
 func main(){
 	mux:=http.NewServeMux()
@@ -40,6 +63,8 @@ func main(){
 	mux.HandleFunc("/about",handleAbout)
 
 	mux.HandleFunc("/product",handleProduct)
+
+	mux.HandleFunc("/products",setProduct)
 
 	fmt.Println("server is running in port:8000")
 
@@ -77,6 +102,4 @@ func init(){
 	ProductList = append(ProductList, prod1)
 	ProductList = append(ProductList, prod2)
 	ProductList = append(ProductList, prod3)
-
-
 }
