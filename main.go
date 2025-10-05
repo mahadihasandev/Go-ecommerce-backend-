@@ -37,8 +37,14 @@ func handleProduct(write http.ResponseWriter,read *http.Request){
 func setProduct(write http.ResponseWriter,read *http.Request){
 
 	write.Header().Set("Access-Control-Allow-Origin","*")
+	write.Header().Set("Access-Control-Allow-Methods","POST")
 	write.Header().Set("Access-Control-Allow-Headers","Content-Type")
 	write.Header().Set("Content-Type","Application/json")
+
+	if(read.Method=="OPTIONS"){
+		write.WriteHeader(200)
+		return
+	}
 
 	if(read.Method!="POST"){
 		http.Error(write,"Send a post request",400)
@@ -55,6 +61,10 @@ func setProduct(write http.ResponseWriter,read *http.Request){
 	}
 	setProductList.Id=len(ProductList)+1
 	ProductList=append(ProductList, setProductList)
+
+	write.WriteHeader(201)
+	encoder:=json.NewEncoder(write)
+	encoder.Encode(setProductList)
 }
 
 
