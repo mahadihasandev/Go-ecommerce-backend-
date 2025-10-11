@@ -21,30 +21,22 @@ type Product struct{
 var ProductList [] Product
 
 func handleProduct(write http.ResponseWriter,read *http.Request){
-
-	write.Header().Set("Access-Control-Allow-Origin","*")
-	write.Header().Set("Content-Type","Application/json")
+	handleCors(write)
+	
+	handlePreFlight(write,read)
 
 	if(read.Method!="GET"){
 		http.Error(write,"Send a get request",400)
 		return
 	}
-
-	encoder:=json.NewEncoder(write)
-	encoder.Encode(ProductList)
+	sendData(write,ProductList,200)
 }
 
 func setProduct(write http.ResponseWriter,read *http.Request){
 
-	write.Header().Set("Access-Control-Allow-Origin","*")
-	write.Header().Set("Access-Control-Allow-Methods","POST")
-	write.Header().Set("Access-Control-Allow-Headers","Content-Type")
-	write.Header().Set("Content-Type","Application/json")
+	handleCors(write)
 
-	if(read.Method=="OPTIONS"){
-		write.WriteHeader(200)
-		return
-	}
+	handlePreFlight(write,read)
 
 	if(read.Method!="POST"){
 		http.Error(write,"Send a post request",400)
@@ -62,11 +54,28 @@ func setProduct(write http.ResponseWriter,read *http.Request){
 	setProductList.Id=len(ProductList)+1
 	ProductList=append(ProductList, setProductList)
 
-	write.WriteHeader(201)
-	encoder:=json.NewEncoder(write)
-	encoder.Encode(setProductList)
+	sendData(write,setProductList,201)
 }
 
+func handleCors(write http.ResponseWriter){
+	write.Header().Set("Access-Control-Allow-Origin","*")
+	write.Header().Set("Access-Control-Allow-Methods","GET, POST, PUT, PATCH, DELETE, OPTIONS")
+	write.Header().Set("Access-Control-Allow-Headers","Content-Type")
+	write.Header().Set("Content-Type","Application/json")
+}
+
+func handlePreFlight(write http.ResponseWriter,read *http.Request){
+	if(read.Method=="OPTIONS"){
+		write.WriteHeader(200)
+		return
+	}
+}
+
+func sendData(write http.ResponseWriter, data interface{}, statusCode int){
+	write.WriteHeader(statusCode)
+	encoder:=json.NewEncoder(write)
+	encoder.Encode(data)
+}
 
 func main(){
 	mux:=http.NewServeMux()
