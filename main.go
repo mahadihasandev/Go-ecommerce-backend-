@@ -7,7 +7,7 @@ import (
 )
 
 func handleAbout(write http.ResponseWriter,read *http.Request){
-	fmt.Fprintln(write,"this is service")
+	fmt.Fprintln(write,"this is About")
 }
 
 type Product struct{
@@ -24,24 +24,13 @@ func handleProduct(write http.ResponseWriter,read *http.Request){
 	handleCors(write)
 	
 	handlePreFlight(write,read)
-
-	if(read.Method!="GET"){
-		http.Error(write,"Send a get request",400)
-		return
-	}
 	sendData(write,ProductList,200)
 }
 
 func setProduct(write http.ResponseWriter,read *http.Request){
 
 	handleCors(write)
-
 	handlePreFlight(write,read)
-
-	if(read.Method!="POST"){
-		http.Error(write,"Send a post request",400)
-		return
-	}
 
 	var setProductList Product
 	decoder:=json.NewDecoder(read.Body)
@@ -80,11 +69,11 @@ func sendData(write http.ResponseWriter, data interface{}, statusCode int){
 func main(){
 	mux:=http.NewServeMux()
 
-	mux.HandleFunc("/about",handleAbout)
+	mux.Handle("GET /about",http.HandlerFunc(handleAbout))
 
-	mux.HandleFunc("/product",handleProduct)
+	mux.Handle("GET /product",http.HandlerFunc(handleProduct))
 
-	mux.HandleFunc("/products",setProduct)
+	mux.Handle("POST /products",http.HandlerFunc(setProduct))
 
 	fmt.Println("server is running in port:8000")
 
