@@ -44,27 +44,14 @@ func sendData(write http.ResponseWriter, data interface{}, statusCode int) {
 	encoder.Encode(data)
 }
 
-func corsMiddleware(next http.Handler) http.Handler {
-	handleCors := func(write http.ResponseWriter, read *http.Request) {
-		write.Header().Set("Access-Control-Allow-Origin", "*")
-		write.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
-		write.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		write.Header().Set("Content-Type", "Application/json")
-
-		next.ServeHTTP(write, read)
-	}
-	handler := http.HandlerFunc(handleCors)
-	return handler
-}
-
 func main() {
 	mux := http.NewServeMux()
 
 	mux.Handle("GET /about", http.HandlerFunc(handleAbout))
 
-	mux.Handle("GET /product", corsMiddleware(http.HandlerFunc(handleProduct)))
+	mux.Handle("GET /product", http.HandlerFunc(handleProduct))
 
-	mux.Handle("POST /products", corsMiddleware(http.HandlerFunc(setProduct)))
+	mux.Handle("POST /products", http.HandlerFunc(setProduct))
 
 	httpGlobalRouter := GlobalRoute(mux)
 
@@ -107,17 +94,18 @@ func init() {
 }
 
 func GlobalRoute(mux *http.ServeMux) http.Handler {
-	GlobalRoutes := func(write http.ResponseWriter, read *http.Request) {
-		if read.Method == "OPTIONS" {
+	AllRequest := func(write http.ResponseWriter, read *http.Request) {
 			write.Header().Set("Access-Control-Allow-Origin", "*")
 			write.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
 			write.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 			write.Header().Set("Content-Type", "Application/json")
+
+		if read.Method == "OPTIONS" {
 			write.WriteHeader(200)
-		} else {
-			mux.ServeHTTP(write, read)
-		}
+			return 
+		} 
+			mux.ServeHTTP(write, read)	
 	}
-	return http.HandlerFunc(GlobalRoutes)
+	return http.HandlerFunc(AllRequest)
 
 }
