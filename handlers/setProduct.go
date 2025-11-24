@@ -3,13 +3,13 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"ecommerce/product"
+	"ecommerce/database"
 	"ecommerce/util"
 	
 )
 
 func SetProduct(write http.ResponseWriter, read *http.Request) {
-	var setProductList product.Product
+	var setProductList database.Product
 	decoder := json.NewDecoder(read.Body)
 	err := decoder.Decode(&setProductList)
 
@@ -17,7 +17,7 @@ func SetProduct(write http.ResponseWriter, read *http.Request) {
 		http.Error(write, "Send a json object", 400)
 		return
 	}
-	setProductList.Id = len(product.ProductList) + 1
-	product.ProductList = append(product.ProductList, setProductList)
+	setProductList.Id = len(database.ProductList) + 1
+	database.ProductList = append(database.ProductList, setProductList)
 	util.SendData(write, setProductList, 201)
 }

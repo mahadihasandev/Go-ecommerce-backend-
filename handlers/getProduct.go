@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"net/http"
-	"ecommerce/product"
+	"ecommerce/database"
 	"ecommerce/util"
 )
 
 func HandleProduct(write http.ResponseWriter, read *http.Request) {
-	util.SendData(write, product.ProductList, 200)
+	util.SendData(write, database.ProductList, 200)
 }
