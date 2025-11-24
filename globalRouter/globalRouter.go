@@ -1,4 +1,4 @@
-package main
+package globalRouter
 
 import "net/http"
 
