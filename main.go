@@ -5,13 +5,7 @@ import (
 	"net/http"
 )
 
-type Product struct {
-	Id          int
-	Title       string
-	Description string
-	Price       float64
-	ImgUrl      string
-}
+
 
 var ProductList []Product
 
