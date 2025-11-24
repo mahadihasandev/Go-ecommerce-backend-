@@ -5,10 +5,6 @@ import (
 	"net/http"
 )
 
-
-
-var ProductList []Product
-
 func main() {
 	mux := http.NewServeMux()
 	mux.Handle("GET /about", http.HandlerFunc(handleAbout))
