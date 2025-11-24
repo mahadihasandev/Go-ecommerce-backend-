@@ -1,14 +1,10 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 )
 
-func handleAbout(write http.ResponseWriter, read *http.Request) {
-	fmt.Fprintln(write, "this is About")
-}
 
 type Product struct {
 	Id          int
@@ -20,29 +16,6 @@ type Product struct {
 
 var ProductList []Product
 
-func handleProduct(write http.ResponseWriter, read *http.Request) {
-	sendData(write, ProductList, 200)
-}
-
-func setProduct(write http.ResponseWriter, read *http.Request) {
-	var setProductList Product
-	decoder := json.NewDecoder(read.Body)
-	err := decoder.Decode(&setProductList)
-
-	if err != nil {
-		http.Error(write, "Send a json object", 400)
-		return
-	}
-	setProductList.Id = len(ProductList) + 1
-	ProductList = append(ProductList, setProductList)
-	sendData(write, setProductList, 201)
-}
-
-func sendData(write http.ResponseWriter, data interface{}, statusCode int) {
-	write.WriteHeader(statusCode)
-	encoder := json.NewEncoder(write)
-	encoder.Encode(data)
-}
 
 func main() {
 	mux := http.NewServeMux()
